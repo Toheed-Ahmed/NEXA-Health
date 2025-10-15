@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NEXA | Smart Patient Record & Reminder System</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  </head>
+  <body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loading-screen">
+      <div class="loading-content">
+        <div class="loading-logo">
+          <i class="fas fa-heartbeat"></i>
+          <span>NEXA Health</span>
+        </div>
+        <div class="loading-spinner"></div>
+        <p>Initializing Smart Healthcare System...</p>
+      </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div
+      class="toast-container"
+      id="toast-container"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
+
+    <!-- Login Modal -->
+    <div class="modal" id="login-modal">
+      <div class="modal-content">
+        <div class="login-header">
+          <div class="login-logo">
+            <i class="fas fa-heartbeat"></i>
+            <span>NEXA Health</span>
+          </div>
+          <h2>Welcome Back</h2>
+          <p>Sign in to your account</p>
+        </div>
+        <form id="login-form" class="login-form">
+          <div class="form-group">
+            <label for="login-email">Email Address</label>
+            <input
+              type="email"
+              id="login-email"
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <input
+              type="password"
+              id="login-password"
+              placeholder="Enter your password"
+              required
+            />
+          </div>
+          <div class="form-options">
+            <label class="checkbox">
+              <input type="checkbox" id="remember-me" />
+              <span class="checkmark"></span>
+              Remember me
+            </label>
+            <a href="#" class="forgot-link">Forgot password?</a>
+          </div>
+          <button type="submit" class="btn primary full-width">
+            <i class="fas fa-sign-in-alt"></i>
+            Sign In
+          </button>
+        </form>
+        <div class="login-divider">
+          <span>Or continue as</span>
+        </div>
+        <div class="demo-logins">
+          <button class="demo-btn" data-role="admin">
+            <i class="fas fa-cogs"></i>
+            <span>Administrator</span>
+          </button>
+          <button class="demo-btn" data-role="doctor">
+            <i class="fas fa-user-md"></i>
+            <span>Medical Doctor</span>
+          </button>
+          <button class="demo-btn" data-role="patient">
+            <i class="fas fa-user-injured"></i>
+            <span>Patient</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="main-navbar" style="display: none">
+      <div class="nav-container container">
+        <div class="nav-logo">
+          <i class="fas fa-heartbeat"></i>
+          <span>NEXA Health</span>
+          <span class="beta-tag">BETA</span>
+        </div>
+        <div class="nav-menu">
+          <div class="user-profile">
+            <div class="user-avatar">
+              <i class="fas fa-user-md"></i>
+            </div>
+            <div class="user-info">
+              <span class="user-name" id="user-name">Dr. Ahmed Khan</span>
+              <span class="user-role" id="user-role">Administrator</span>
+            </div>
+          </div>
+          <div class="nav-controls">
+            <div class="theme-toggle">
+              <button id="theme-toggle" class="btn-icon">
+                <i class="fas fa-moon"></i>
+              </button>
+            </div>
+            <div class="notification-bell">
+              <button id="notification-bell" class="btn-icon">
+                <i class="fas fa-bell"></i>
+                <span class="notification-count">3</span>
+              </button>
+            </div>
+            <button id="logout-btn" class="btn secondary small">
+              <i class="fas fa-sign-out-alt"></i>
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Notification Panel -->
+    <div class="notification-panel" id="notification-panel">
+      <div class="notification-header">
+        <h3>Notifications</h3>
+        <button class="btn-icon" id="close-notifications">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="notification-list" id="notification-list">
+        <!-- Notifications will be populated by JavaScript -->
+      </div>
+    </div>
+
+    <!-- Quick Actions Bar -->
+    <div class="quick-actions" id="quick-actions" style="display: none">
+      <div class="container">
+        <div class="action-buttons">
+          <button class="action-btn" id="quick-patient">
+            <i class="fas fa-user-plus"></i>
+            <span>New Patient</span>
+          </button>
+          <button class="action-btn" id="quick-appointment">
+            <i class="fas fa-calendar-plus"></i>
+            <span>New Appointment</span>
+          </button>
+          <button class="action-btn" id="quick-prescription">
+            <i class="fas fa-prescription"></i>
+            <span>New Prescription</span>
+          </button>
+          <button class="action-btn" id="quick-lab">
+            <i class="fas fa-microscope"></i>
+            <span>Lab Test</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main App Layout -->
+    <div class="app container" id="main-app" style="display: none">
+      <!-- Enhanced Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <h3>Navigation</h3>
+        </div>
+        <nav class="sidebar-nav">
+          <div class="nav-group">
+            <div class="nav-group-header">
+              <i class="fas fa-tachometer-alt"></i>
+              <span>Dashboard</span>
+            </div>
+            <ul>
+              <li>
+                <a href="#" data-view="dashboard" class="nav-link active">
+                  <i class="fas fa-home"></i>
+                  <span>Overview</span>
+                </a>
+              </li>
+              <li>
+                <a href="#" data-view="analytics" class="nav-link">
+                  <i class="fas fa-chart-line"></i>
+                  <span>Analytics</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="nav-group">
+            <div class="nav-group-header">
+              <i class="fas fa-users"></i>
+              <span>Patient Management</span>
+            </div>
+            <ul>
+              <li>
+                <a href="#" data-view="patients" class="nav-link">
+                  <i class="fas fa-user-injured"></i>
+                  <span>All Patients</span>
+                  <span class="nav-badge" id="patient-count">0</span>
+                </a>
+              </li>
+              <li>
+                <a href="#" data-view="new-patients" class="nav-link">
+                  <i class="fas fa-user-plus"></i>
+                  <span>New Registrations</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="nav-group">
+            <div class="nav-group-header">
+              <i class="fas fa-calendar-alt"></i>
+              <span>Appointments</span>
+            </div>
+            <ul>
+              <li>
+                <a href="#" data-view="appointments" class="nav-link">
+                  <i class="fas fa-list"></i>
+                  <span>All Appointments</span>
+                </a>
+              </li>
+              <li>
+                <a href="#" data-view="today-appointments" class="nav-link">
+                  <i class="fas fa-calendar-day"></i>
+                  <span>Today's Schedule</span>
+                  <span class="nav-badge" id="today-appointments-count">0</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="nav-group">
+            <div class="nav-group-header">
+              <i class="fas fa-bell"></i>
+              <span>Reminders & Alerts</span>
+            </div>
+            <ul>
+              <li>
+                <a href="#" data-view="reminders" class="nav-link">
+                  <i class="fas fa-clock"></i>
+                  <span>Smart Reminders</span>
+                </a>
+              </li>
+              <li>
+                <a href="#" data-view="alerts" class="nav-link">
+                  <i class="fas fa-exclamation-triangle"></i>
+                  <span>Health Alerts</span>
+                  <span class="nav-badge alert">2</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="nav-group">
+            <div class="nav-group-header">
+              <i class="fas fa-robot"></i>
+              <span>AI Assistant</span>
+            </div>
+            <ul>
+              <li>
+                <a href="#" data-view="chatbot" class="nav-link">
+                  <i class="fas fa-comments"></i>
+                  <span>Chat Assistant</span>
+                </a>
+              </li>
+              <li>
+                <a href="#" data-view="ai-insights" class="nav-link">
+                  <i class="fas fa-brain"></i>
+                  <span>AI Insights</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="system-status">
+            <div class="status-indicator online"></div>
+            <span>System Online</span>
+          </div>
+          <small>Team NEXA </small>
+        </div>
+      </aside>
+
+      <!-- Enhanced Main Content -->
+      <main class="main-content" id="main-content">
+        <!-- Dashboard View -->
+        <section id="view-dashboard" class="view active">
+          <div class="view-header">
+            <div class="header-content">
+              <h1>Healthcare Dashboard</h1>
+              <p class="subtitle">
+                <!-- Real-time overview of your medical practice -->
+              </p>
+            </div>
+            <div class="header-actions">
+              <div class="date-display">
+                <i class="fas fa-calendar"></i>
+                <span id="current-date"></span>
+              </div>
+              <button class="btn primary" id="generate-report">
+                <i class="fas fa-download"></i>
+                Generate Report
+              </button>
+            </div>
+          </div>
+
+          <!-- Stats Overview -->
+          <div class="stats-overview">
+            <div class="stat-card primary">
+              <div class="stat-icon">
+                <i class="fas fa-user-injured"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="total-patients">0</h3>
+                <p>Total Patients</p>
+                <span class="stat-trend positive">
+                  <i class="fas fa-arrow-up"></i>
+                  12% this month
+                </span>
+              </div>
+            </div>
+            <div class="stat-card success">
+              <div class="stat-icon">
+                <i class="fas fa-calendar-check"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="today-appointments">0</h3>
+                <p>Today's Appointments</p>
+                <span class="stat-trend">
+                  <i class="fas fa-clock"></i>
+                  Next: 30 min
+                </span>
+              </div>
+            </div>
+            <div class="stat-card warning">
+              <div class="stat-icon">
+                <i class="fas fa-bell"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="pending-reminders">0</h3>
+                <p>Pending Reminders</p>
+                <span class="stat-trend negative">
+                  <i class="fas fa-exclamation-circle"></i>
+                  Action required
+                </span>
+              </div>
+            </div>
+            <div class="stat-card info">
+              <div class="stat-icon">
+                <i class="fas fa-stethoscope"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="active-doctors">0</h3>
+                <p>Active Doctors</p>
+                <span class="stat-trend">
+                  <i class="fas fa-user-md"></i>
+                  4 available
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Main Dashboard Grid -->
+          <div class="dashboard-grid">
+            <!-- Upcoming Appointments -->
+            <div class="dashboard-card">
+              <div class="card-header">
+                <h3>Upcoming Appointments</h3>
+                <a href="#" data-view-link="appointments" class="link-btn"
+                  >View All</a
+                >
+              </div>
+              <div class="appointments-timeline" id="appointments-timeline">
+                <!-- Appointments will be populated by JavaScript -->
+              </div>
+            </div>
+
+            <!-- Patient Activity -->
+            <div class="dashboard-card">
+              <div class="card-header">
+                <h3>Recent Patient Activity</h3>
+                <a href="#" data-view-link="patients" class="link-btn"
+                  >View All</a
+                >
+              </div>
+              <div class="activity-list" id="recent-activity">
+                <!-- Activity will be populated by JavaScript -->
+              </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="dashboard-card">
+              <div class="card-header">
+                <h3>Clinic Performance</h3>
+                <span class="performance-badge excellent">Excellent</span>
+              </div>
+              <div class="performance-metrics">
+                <div class="metric">
+                  <span class="metric-value">94%</span>
+                  <span class="metric-label">Appointment Attendance</span>
+                  <div class="metric-bar">
+                    <div class="metric-fill" style="width: 94%"></div>
+                  </div>
+                </div>
+                <div class="metric">
+                  <span class="metric-value">88%</span>
+                  <span class="metric-label">Patient Satisfaction</span>
+                  <div class="metric-bar">
+                    <div class="metric-fill" style="width: 88%"></div>
+                  </div>
+                </div>
+                <div class="metric">
+                  <span class="metric-value">76%</span>
+                  <span class="metric-label">Follow-up Rate</span>
+                  <div class="metric-bar">
+                    <div class="metric-fill" style="width: 76%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- AI Insights -->
+            <div class="dashboard-card ai-insights">
+              <div class="card-header">
+                <h3>AI Health Insights</h3>
+                <i class="fas fa-robot"></i>
+              </div>
+              <div class="insights-content">
+                <div class="insight-item positive">
+                  <i class="fas fa-arrow-up"></i>
+                  <div>
+                    <strong>High patient engagement</strong>
+                    <p>92% of patients responded to reminders</p>
+                  </div>
+                </div>
+                <div class="insight-item warning">
+                  <i class="fas fa-exclamation-triangle"></i>
+                  <div>
+                    <strong>Follow-up needed</strong>
+                    <p>3 patients missed their appointments</p>
+                  </div>
+                </div>
+                <div class="insight-item info">
+                  <i class="fas fa-lightbulb"></i>
+                  <div>
+                    <strong>Peak hours</strong>
+                    <p>Most appointments between 10 AM - 12 PM</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Patients View -->
+        <section id="view-patients" class="view">
+          <div class="view-header">
+            <div class="header-content">
+              <h1>Patient Management</h1>
+              <p class="subtitle">Manage patient records and medical history</p>
+            </div>
+            <div class="header-actions">
+              <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input
+                  type="text"
+                  id="patient-search"
+                  placeholder="Search patients..."
+                />
+              </div>
+              <button id="btn-new-patient" class="btn primary">
+                <i class="fas fa-user-plus"></i>
+                New Patient
+              </button>
+            </div>
+          </div>
+
+          <!-- Patient Filters -->
+          <div class="filters-bar">
+            <div class="filter-group">
+              <label>Status:</label>
+              <select id="status-filter">
+                <option value="all">All Patients</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+                <option value="new">New</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label>Gender:</label>
+              <select id="gender-filter">
+                <option value="all">All Genders</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label>Sort By:</label>
+              <select id="sort-patients">
+                <option value="name">Name</option>
+                <option value="recent">Most Recent</option>
+                <option value="visits">Most Visits</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Enhanced Patients Table -->
+          <div class="card">
+            <div class="table-responsive">
+              <table class="table" id="patients-table">
+                <thead>
+                  <tr>
+                    <th>Patient ID</th>
+                    <th>Name</th>
+                    <th>Contact</th>
+                    <th>Age</th>
+                    <th>Last Visit</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div class="table-footer">
+              <div class="table-info">
+                Showing <span id="showing-patients">0</span> of
+                <span id="total-patients-count">0</span> patients
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Appointments View -->
+        <section id="view-appointments" class="view">
+          <div class="view-header">
+            <div class="header-content">
+              <h1>Appointment Management</h1>
+              <p class="subtitle">Schedule and manage patient appointments</p>
+            </div>
+            <div class="header-actions">
+              <button id="btn-new-appointment" class="btn primary">
+                <i class="fas fa-calendar-plus"></i>
+                New Appointment
+              </button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="table-responsive">
+              <table class="table" id="appointments-table">
+                <thead>
+                  <tr>
+                    <th>Appointment ID</th>
+                    <th>Patient</th>
+                    <th>Doctor</th>
+                    <th>Date/Time</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- Reminders View -->
+        <section id="view-reminders" class="view">
+          <div class="view-header">
+            <div class="header-content">
+              <h1>Smart Reminders</h1>
+              <p class="subtitle">Manage automated patient reminders</p>
+            </div>
+            <div class="header-actions">
+              <button id="send-test-reminder" class="btn primary">
+                <i class="fas fa-bell"></i>
+                Send Test Reminder
+              </button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Pending Reminders</h3>
+            <div class="reminders-list" id="reminders-list">
+              <!-- Reminders will be populated by JavaScript -->
+            </div>
+          </div>
+        </section>
+
+        <!-- Chatbot View -->
+        <section id="view-chatbot" class="view">
+          <div class="view-header">
+            <div class="header-content">
+              <h1>AI Health Assistant</h1>
+              <p class="subtitle">Get instant help with our smart assistant</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="chatbot-fullview">
+              <div class="chat-header">
+                <div class="chat-avatar">
+                  <i class="fas fa-robot"></i>
+                </div>
+                <div class="chat-info">
+                  <h4>NEXA Assistant</h4>
+                  <span class="status online">Online</span>
+                </div>
+              </div>
+              <div class="chat-messages-full" id="chat-messages-full">
+                <div class="msg bot">
+                  Hello! I'm NEXA, your healthcare assistant. I can help you
+                  with patient registration, appointment scheduling, and
+                  answering questions about our services. How can I assist you
+                  today?
+                </div>
+              </div>
+              <div class="chat-input-full">
+                <input
+                  type="text"
+                  id="chat-input-full"
+                  placeholder="Type your message here..."
+                />
+                <button id="chat-send-full" class="btn primary">
+                  <i class="fas fa-paper-plane"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Analytics View -->
+        <section id="view-analytics" class="view">
+          <div class="view-header">
+            <div class="header-content">
+              <h1>Clinic Analytics</h1>
+              <p class="subtitle">
+                Comprehensive insights and performance metrics
+              </p>
+            </div>
+          </div>
+
+          <div class="analytics-grid">
+            <div class="card">
+              <h3>Patient Demographics</h3>
+              <div class="analytics-chart">
+                <canvas id="demographics-chart"></canvas>
+              </div>
+            </div>
+            <div class="card">
+              <h3>Appointment Trends</h3>
+              <div class="analytics-chart">
+                <canvas id="appointments-chart"></canvas>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="nav-group">
+          <div class="nav-group-header">
+            <i class="fas fa-robot"></i>
+            <span>AI Assistant</span>
+          </div>
+          <ul>
+            <li>
+              <a href="#" data-view="chatbot" class="nav-link">
+                <i class="fas fa-comments"></i>
+                <span>Chat Assistant</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" data-view="ai-insights" class="nav-link">
+                <i class="fas fa-brain"></i>
+                <span>AI Insights</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Hospital Finder View -->
+        <section id="view-hospital-finder" class="view active">
+          <div class="view-header">
+            <div class="header-content">
+              <h1>Hospital & Doctor Finder</h1>
+              <p class="subtitle">
+                Find specialized doctors and hospital availability in your area
+              </p>
+            </div>
+            <div class="header-actions">
+              <button class="btn primary" id="emergency-assistance">
+                <i class="fas fa-ambulance"></i>
+                Emergency Assistance
+              </button>
+            </div>
+          </div>
+
+          <!-- Search and Filters -->
+          <div class="card">
+            <div class="search-section">
+              <div class="search-box full-width">
+                <i class="fas fa-search"></i>
+                <input
+                  type="text"
+                  id="hospital-search"
+                  placeholder="Search hospitals, doctors, or specialties..."
+                />
+              </div>
+            </div>
+            <div class="filters-bar">
+              <div class="filter-group">
+                <label>City:</label>
+                <select id="city-filter">
+                  <option value="all">All Cities</option>
+                  <option value="karachi">Karachi</option>
+                  <option value="hyderabad">Hyderabad</option>
+                  <option value="larkana">Larkana</option>
+                  <option value="sukkur">Sukkur</option>
+                  <option value="quetta">Quetta</option>
+                  <option value="peshawar">Peshawar</option>
+                  <option value="lahore">Lahore</option>
+                  <option value="multan">Multan</option>
+                  <option value="khairpur">Khairpur</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <label>Specialty:</label>
+                <select id="specialty-filter">
+                  <option value="all">All Specialties</option>
+                  <option value="diabetes">Diabetes / Endocrinology</option>
+                  <option value="cardiology">Cardiology</option>
+                  <option value="emergency">Emergency / Trauma</option>
+                  <option value="pediatrics">Pediatrics</option>
+                  <option value="obstetrics">Obstetrics & Gynecology</option>
+                  <option value="infectious">Infectious Diseases</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <label>Hospital Type:</label>
+                <select id="type-filter">
+                  <option value="all">All Types</option>
+                  <option value="public">Public</option>
+                  <option value="private">Private</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Emergency Quick Access -->
+          <div class="card">
+            <div class="card-header">
+              <h3>Quick Emergency Access</h3>
+            </div>
+            <div class="emergency-buttons">
+              <button class="emergency-btn cardiac" data-specialty="cardiology">
+                <i class="fas fa-heart-pulse"></i>
+                <span>Cardiac Emergency</span>
+              </button>
+              <button class="emergency-btn trauma" data-specialty="emergency">
+                <i class="fas fa-user-injured"></i>
+                <span>Trauma Center</span>
+              </button>
+              <button
+                class="emergency-btn pediatric"
+                data-specialty="pediatrics"
+              >
+                <i class="fas fa-baby"></i>
+                <span>Pediatric Emergency</span>
+              </button>
+              <button
+                class="emergency-btn maternity"
+                data-specialty="obstetrics"
+              >
+                <i class="fas fa-baby-carriage"></i>
+                <span>Maternity Emergency</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Results Grid -->
+          <div class="card">
+            <div class="card-header">
+              <h3>Available Hospitals & Doctors</h3>
+              <div class="results-count">
+                Showing <span id="results-count">0</span> hospitals
+              </div>
+            </div>
+            <div class="hospital-grid" id="hospital-grid">
+              <!-- Hospitals will be populated by JavaScript -->
+              <div class="empty-state">
+                <i class="fas fa-search"></i>
+                <p>Use the search and filters above to find hospitals</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Add more views as needed -->
+      </main>
+    </div>
+
+    <!-- Patient Registration Modal -->
+    <div class="modal" id="patient-modal">
+      <div class="modal-content large">
+        <button class="modal-close" id="patient-modal-close">&times;</button>
+        <h2>Register New Patient</h2>
+        <form id="patient-form" class="form-grid">
+          <input type="hidden" id="patient-id" />
+
+          <div class="form-section">
+            <h4>Personal Information</h4>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="patient-name">Full Name *</label>
+                <input type="text" id="patient-name" required />
+              </div>
+              <div class="form-group">
+                <label for="patient-dob">Date of Birth</label>
+                <input type="date" id="patient-dob" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="patient-gender">Gender</label>
+                <select id="patient-gender">
+                  <option value="">Select Gender</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="patient-blood">Blood Group</label>
+                <select id="patient-blood">
+                  <option value="">Select Blood Group</option>
+                  <option value="A+">A+</option>
+                  <option value="A-">A-</option>
+                  <option value="B+">B+</option>
+                  <option value="B-">B-</option>
+                  <option value="O+">O+</option>
+                  <option value="O-">O-</option>
+                  <option value="AB+">AB+</option>
+                  <option value="AB-">AB-</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h4>Contact Information</h4>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="patient-phone">Phone Number *</label>
+                <input type="tel" id="patient-phone" required />
+              </div>
+              <div class="form-group">
+                <label for="patient-email">Email Address</label>
+                <input type="email" id="patient-email" />
+              </div>
+            </div>
+            <div class="form-group full">
+              <label for="patient-address">Address</label>
+              <textarea id="patient-address" rows="2"></textarea>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h4>Medical Information</h4>
+            <div class="form-group full">
+              <label for="patient-allergies">Allergies</label>
+              <input
+                type="text"
+                id="patient-allergies"
+                placeholder="List any allergies (comma separated)"
+              />
+            </div>
+            <div class="form-group full">
+              <label for="patient-history">Medical History</label>
+              <textarea
+                id="patient-history"
+                rows="3"
+                placeholder="Previous conditions, surgeries, etc."
+              ></textarea>
+            </div>
+            <div class="form-group full">
+              <label for="patient-medications">Current Medications</label>
+              <textarea
+                id="patient-medications"
+                rows="2"
+                placeholder="List current medications"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h4>Emergency Contact</h4>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="emergency-name">Contact Name</label>
+                <input type="text" id="emergency-name" />
+              </div>
+              <div class="form-group">
+                <label for="emergency-phone">Contact Phone</label>
+                <input type="tel" id="emergency-phone" />
+              </div>
+            </div>
+            <div class="form-group full">
+              <label for="emergency-relation">Relationship</label>
+              <input type="text" id="emergency-relation" />
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="submit" class="btn primary">Save Patient</button>
+            <button type="button" class="btn secondary" id="patient-cancel">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Appointment Modal -->
+    <div class="modal" id="appointment-modal">
+      <div class="modal-content">
+        <button class="modal-close" id="appointment-modal-close">
+          &times;
+        </button>
+        <h2>Schedule Appointment</h2>
+        <form id="appointment-form" class="form-grid">
+          <input type="hidden" id="appointment-id" />
+
+          <div class="form-group">
+            <label for="appointment-patient">Patient *</label>
+            <select id="appointment-patient" required>
+              <option value="">Select Patient</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="appointment-doctor">Doctor *</label>
+            <select id="appointment-doctor" required>
+              <option value="">Select Doctor</option>
+              <option value="Dr. Ahmed Khan">Dr. Ahmed Khan</option>
+              <option value="Dr. Ayesha Rahman">Dr. Ayesha Rahman</option>
+              <option value="Dr. Muhammad Ali">Dr. Muhammad Ali</option>
+              <option value="Dr. Fatima Noor">Dr. Fatima Noor</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="appointment-date">Date *</label>
+              <input type="date" id="appointment-date" required />
+            </div>
+            <div class="form-group">
+              <label for="appointment-time">Time *</label>
+              <input type="time" id="appointment-time" required />
+            </div>
+          </div>
+
+          <div class="form-group full">
+            <label for="appointment-reason">Reason for Visit</label>
+            <textarea
+              id="appointment-reason"
+              rows="3"
+              placeholder="Describe the reason for appointment"
+            ></textarea>
+          </div>
+
+          <div class="form-group full">
+            <label for="appointment-notes">Additional Notes</label>
+            <textarea
+              id="appointment-notes"
+              rows="2"
+              placeholder="Any additional information"
+            ></textarea>
+          </div>
+
+          <div class="modal-actions">
+            <button type="submit" class="btn primary">
+              Schedule Appointment
+            </button>
+            <button type="button" class="btn secondary" id="appointment-cancel">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Prescription Modal -->
+    <div class="modal" id="prescription-modal">
+      <div class="modal-content large">
+        <button class="modal-close" id="prescription-modal-close">
+          &times;
+        </button>
+        <h2>Create Prescription</h2>
+        <form id="prescription-form" class="form-grid">
+          <div class="form-group">
+            <label for="prescription-patient">Patient *</label>
+            <select id="prescription-patient" required>
+              <option value="">Select Patient</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="prescription-doctor">Prescribing Doctor *</label>
+            <input
+              type="text"
+              id="prescription-doctor"
+              value="Dr. Ahmed Khan"
+              readonly
+            />
+          </div>
+
+          <div class="form-group full">
+            <label for="prescription-medication">Medication *</label>
+            <input
+              type="text"
+              id="prescription-medication"
+              placeholder="Enter medication name"
+              required
+            />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="prescription-dosage">Dosage</label>
+              <input
+                type="text"
+                id="prescription-dosage"
+                placeholder="e.g., 500mg"
+              />
+            </div>
+            <div class="form-group">
+              <label for="prescription-frequency">Frequency</label>
+              <input
+                type="text"
+                id="prescription-frequency"
+                placeholder="e.g., Twice daily"
+              />
+            </div>
+          </div>
+
+          <div class="form-group full">
+            <label for="prescription-instructions">Instructions</label>
+            <textarea
+              id="prescription-instructions"
+              rows="3"
+              placeholder="Special instructions for the patient"
+            ></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="prescription-start">Start Date</label>
+              <input type="date" id="prescription-start" />
+            </div>
+            <div class="form-group">
+              <label for="prescription-end">End Date</label>
+              <input type="date" id="prescription-end" />
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="submit" class="btn primary">Save Prescription</button>
+            <button
+              type="button"
+              class="btn secondary"
+              id="prescription-cancel"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Lab Test Modal -->
+    <div class="modal" id="labtest-modal">
+      <div class="modal-content">
+        <button class="modal-close" id="labtest-modal-close">&times;</button>
+        <h2>Order Lab Test</h2>
+        <form id="labtest-form" class="form-grid">
+          <div class="form-group">
+            <label for="labtest-patient">Patient *</label>
+            <select id="labtest-patient" required>
+              <option value="">Select Patient</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="labtest-type">Test Type *</label>
+            <select id="labtest-type" required>
+              <option value="">Select Test Type</option>
+              <option value="blood_test">Blood Test</option>
+              <option value="urine_test">Urine Test</option>
+              <option value="x_ray">X-Ray</option>
+              <option value="mri">MRI Scan</option>
+              <option value="ct_scan">CT Scan</option>
+              <option value="ultrasound">Ultrasound</option>
+              <option value="ecg">ECG</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="form-group full">
+            <label for="labtest-notes">Test Notes</label>
+            <textarea
+              id="labtest-notes"
+              rows="3"
+              placeholder="Specific instructions or notes for the lab"
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="labtest-priority">Priority</label>
+            <select id="labtest-priority">
+              <option value="routine">Routine</option>
+              <option value="urgent">Urgent</option>
+              <option value="stat">STAT</option>
+            </select>
+          </div>
+
+          <div class="modal-actions">
+            <button type="submit" class="btn primary">Order Test</button>
+            <button type="button" class="btn secondary" id="labtest-cancel">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Enhanced Floating Chatbot -->
+    <div id="chatbot-widget" class="chatbot-widget">
+      <div class="cw-header">
+        <div class="cw-avatar">
+          <i class="fas fa-robot"></i>
+        </div>
+        <div class="cw-info">
+          <h4>NEXA Assistant</h4>
+          <span class="status online">Online</span>
+        </div>
+        <div class="cw-actions">
+          <button class="btn-icon" id="cw-minimize">
+            <i class="fas fa-minus"></i>
+          </button>
+          <button class="btn-icon" id="cw-close">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+      <div id="cw-messages" class="cw-messages"></div>
+      <div class="cw-quick-actions">
+        <button class="quick-chip" data-action="appointment">
+          Check Appointment
+        </button>
+        <button class="quick-chip" data-action="register">
+          Register Patient
+        </button>
+        <button class="quick-chip" data-action="hours">Clinic Hours</button>
+      </div>
+      <div class="cw-input">
+        <input id="cw-input" placeholder="Type your message here..." />
+        <button id="cw-send" class="btn primary">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Enhanced Chatbot Toggle -->
+    <button id="cw-open" class="cw-open">
+      <i class="fas fa-robot"></i>
+      <span class="pulse-dot"></span>
+    </button>
+    <!-- Report Generation Modal -->
+    <div class="modal" id="report-modal">
+      <div class="modal-content">
+        <button class="modal-close" id="report-modal-close">&times;</button>
+        <h2>Generate Report</h2>
+        <div class="report-options">
+          <div class="report-option" data-type="comprehensive">
+            <div class="report-icon">
+              <i class="fas fa-chart-bar"></i>
+            </div>
+            <div class="report-info">
+              <h3>Comprehensive Report</h3>
+              <p>
+                Complete overview with statistics, patient data, and analytics
+              </p>
+            </div>
+          </div>
+
+          <div class="report-option" data-type="patients">
+            <div class="report-icon">
+              <i class="fas fa-user-injured"></i>
+            </div>
+            <div class="report-info">
+              <h3>Patient Report</h3>
+              <p>Detailed patient information and demographics</p>
+            </div>
+          </div>
+
+          <div class="report-option" data-type="appointments">
+            <div class="report-icon">
+              <i class="fas fa-calendar-alt"></i>
+            </div>
+            <div class="report-info">
+              <h3>Appointments Report</h3>
+              <p>All scheduled appointments and booking history</p>
+            </div>
+          </div>
+
+          <div class="report-option" data-type="financial">
+            <div class="report-icon">
+              <i class="fas fa-dollar-sign"></i>
+            </div>
+            <div class="report-info">
+              <h3>Financial Report</h3>
+              <p>Revenue, expenses, and financial performance</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn secondary" id="report-cancel">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/services/api.js"></script>
+    <script src="js/services/auth.js"></script>
+    <script src="js/services/patients.js"></script>
+    <script src="js/services/appointments.js"></script>
+  </body>
+</html>
